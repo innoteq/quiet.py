@@ -53,7 +53,7 @@ cp "$SYSROOTPATH/usr/include/jansson_config.h" "$INCLUDEPATH"
 # cp "$SYSROOTPATH/usr/include/portaudio.h" "$INCLUDEPATH"
 cp "$SYSROOTPATH/usr/include/quiet.h" "$INCLUDEPATH"
 
-gcc -shared -o $LIBPATH/libquiet.so \
+gcc -shared -o $ABSPATH/quiet/libquiet.so \
 -Wl,--whole-archive $LIBPATH/libquiet.a $LIBPATH/libliquid.a $LIBPATH/libfec.a \
 $LIBPATH/libjansson.a -Wl,--no-whole-archive
 
