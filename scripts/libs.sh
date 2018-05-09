@@ -31,7 +31,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$SYSROOT/usr" -DJANSSON
 
 # mkdir -p "$BUILDPATH/portaudio"
 # cd "$BUILDPATH/portaudio"
-# cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$SYSROOT/usr" -DCMAKE_PREFIX_PATH="$SYSROOT" "$SRCPATH/portaudio" && make && make install && cp libportaudio_static.a "$SYSROOT/usr/lib/libportaudio.a"
+# cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_INSTALL_PREFIX="$SYSROOT/usr" -DCMAKE_PREFIX_PATH="$SYSROOT" "$SRCPATH/portaudio" && make && make install && cp libportaudio_static.a "$SYSROOT/usr/lib/libportaudio.a"
 
 mkdir -p "$BUILDPATH/libquiet"
 cd "$BUILDPATH/libquiet"
@@ -53,9 +53,16 @@ cp "$SYSROOTPATH/usr/include/jansson_config.h" "$INCLUDEPATH"
 # cp "$SYSROOTPATH/usr/include/portaudio.h" "$INCLUDEPATH"
 cp "$SYSROOTPATH/usr/include/quiet.h" "$INCLUDEPATH"
 
+if [ "$(uname)" == "Darwin" ]; then
+gcc -shared -o $ABSPATH/quiet/libquiet.so \
+-Wl,-all_load $LIBPATH/libquiet.a $LIBPATH/libliquid.a $LIBPATH/libfec.a \
+$LIBPATH/libjansson.a -Wl,-noall_load
+else
 gcc -shared -o $ABSPATH/quiet/libquiet.so \
 -Wl,--whole-archive $LIBPATH/libquiet.a $LIBPATH/libliquid.a $LIBPATH/libfec.a \
 $LIBPATH/libjansson.a -Wl,--no-whole-archive
+fi
+
 
 echo
 echo "Build complete. Built libraries are in $LIBPATH"
