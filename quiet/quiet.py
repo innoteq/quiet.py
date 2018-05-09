@@ -13,11 +13,10 @@ PROFILES = os.path.join(os.path.dirname(__file__), 'quiet-profiles.json')
 c_float_p = POINTER(c_float)
 
 
-
 class Quiet(object):
     # for lazy loading
     lib = None
-    
+
     @staticmethod
     def load_lib():
         lib_name = 'libquiet.so'
@@ -59,7 +58,8 @@ class Quiet(object):
         lib.quiet_encoder_get_frame_len.restype = c_size_t
 
         # ssize_t quiet_encoder_emit(quiet_encoder *e, quiet_sample_t *samplebuf, size_t samplebuf_len)
-        lib.quiet_encoder_emit.argtypes = [c_void_p, ndpointer(c_float, flags="C_CONTIGUOUS"), c_size_t]
+        lib.quiet_encoder_emit.argtypes = [
+            c_void_p, ndpointer(c_float, flags="C_CONTIGUOUS"), c_size_t]
         lib.quiet_encoder_emit.restype = c_ssize_t
 
         # void quiet_encoder_close(quiet_encoder *e)
@@ -75,7 +75,8 @@ class Quiet(object):
         lib.quiet_decoder_create.restype = c_void_p
 
         # ssize_t quiet_decoder_recv(quiet_decoder *d, uint8_t *data, size_t len)
-        lib.quiet_decoder_recv.argtypes = [c_void_p, ndpointer(c_uint8, flags="C_CONTIGUOUS"), c_size_t]
+        lib.quiet_decoder_recv.argtypes = [
+            c_void_p, ndpointer(c_uint8, flags="C_CONTIGUOUS"), c_size_t]
         lib.quiet_decoder_recv.restype = c_ssize_t
 
         # void quiet_decoder_set_nonblocking(quiet_decoder *d)
@@ -119,9 +120,11 @@ class Decoder(object):
     def __init__(self, sample_rate=44100., profile_name='audible', profiles=PROFILES, max_frame=128):
         if not Quiet.lib:
             Quiet.lib = Quiet.load_lib()
-        
-        self._decoder_options = Quiet.lib.quiet_decoder_profile_filename(profiles.encode('utf-8'), profile_name.encode('utf-8'))
-        self._decoder = Quiet.lib.quiet_decoder_create(self._decoder_options, sample_rate)
+
+        self._decoder_options = Quiet.lib.quiet_decoder_profile_filename(
+            profiles.encode('utf-8'), profile_name.encode('utf-8'))
+        self._decoder = Quiet.lib.quiet_decoder_create(
+            self._decoder_options, sample_rate)
 
         self.max_frame = max_frame
 
@@ -129,14 +132,15 @@ class Decoder(object):
         Quiet.lib.quiet_decoder_destroy(self._decoder)
 
     def decode(self, data, flush=False):
-        Quiet.lib.quiet_decoder_consume(self._decoder, data.ctypes.data_as(c_void_p), len(data))
+        Quiet.lib.quiet_decoder_consume(
+            self._decoder, data.ctypes.data_as(c_void_p), len(data))
 
         if flush:
             Quiet.lib.quiet_decoder_flush(self._decoder)
 
         buf = numpy.empty(self.max_frame, dtype='uint8')
         got = Quiet.lib.quiet_decoder_recv(self._decoder, buf, len(buf))
-        
+
         if got > 0:
             return buf[:got]
 
@@ -154,15 +158,18 @@ class Encoder(object):
     def __init__(self, sample_rate=44100., profile_name='audible', profiles=PROFILES):
         if not Quiet.lib:
             Quiet.lib = Quiet.load_lib()
-        
-        self._encoder_options =  Quiet.lib.quiet_encoder_profile_filename(profiles.encode('utf-8'), profile_name.encode('utf-8'))
-        self._encoder =  Quiet.lib.quiet_encoder_create(self._encoder_options, sample_rate)
+
+        self._encoder_options = Quiet.lib.quiet_encoder_profile_filename(
+            profiles.encode('utf-8'), profile_name.encode('utf-8'))
+        self._encoder = Quiet.lib.quiet_encoder_create(
+            self._encoder_options, sample_rate)
 
     def __del__(self):
         Quiet.lib.quiet_encoder_destroy(self._encoder)
 
     def encode(self, data, chunk_size=1024):
-        Quiet.lib.quiet_encoder_send(self._encoder, data.encode('utf-8'), len(data))
+        Quiet.lib.quiet_encoder_send(
+            self._encoder, data.encode('utf-8'), len(data))
 
         buf = numpy.empty(chunk_size, dtype='float32')
         while True:
