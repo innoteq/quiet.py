@@ -120,7 +120,7 @@ class Decoder(object):
         if not Quiet.lib:
             Quiet.lib = Quiet.load_lib()
         
-        self._decoder_options = Quiet.lib.quiet_decoder_profile_filename(profiles, profile_name)
+        self._decoder_options = Quiet.lib.quiet_decoder_profile_filename(profiles.encode('utf-8'), profile_name.encode('utf-8'))
         self._decoder = Quiet.lib.quiet_decoder_create(self._decoder_options, sample_rate)
 
         self.max_frame = max_frame
@@ -155,14 +155,14 @@ class Encoder(object):
         if not Quiet.lib:
             Quiet.lib = Quiet.load_lib()
         
-        self._encoder_options =  Quiet.lib.quiet_encoder_profile_filename(profiles, profile_name)
+        self._encoder_options =  Quiet.lib.quiet_encoder_profile_filename(profiles.encode('utf-8'), profile_name.encode('utf-8'))
         self._encoder =  Quiet.lib.quiet_encoder_create(self._encoder_options, sample_rate)
 
     def __del__(self):
         Quiet.lib.quiet_encoder_destroy(self._encoder)
 
     def encode(self, data, chunk_size=1024):
-        Quiet.lib.quiet_encoder_send(self._encoder, c_char_p(data), len(data))
+        Quiet.lib.quiet_encoder_send(self._encoder, data.encode('utf-8'), len(data))
 
         buf = numpy.empty(chunk_size, dtype='float32')
         while True:
@@ -185,7 +185,11 @@ class Encoder(object):
 
 def decode():
     import pyaudio
-    import Queue
+    import sys
+    if sys.version_info[0] < 3:
+        import Queue as queue
+    else:
+        import queue
 
     FORMAT = pyaudio.paFloat32
     CHANNELS = 1
@@ -193,7 +197,7 @@ def decode():
     CHUNK = 16384  # int(RATE / 100)
 
     p = pyaudio.PyAudio()
-    q = Queue.Queue()
+    q = queue.Queue()
 
     def callback(in_data, frame_count, time_info, status):
         q.put(in_data)
@@ -232,4 +236,4 @@ def test():
 
 
 if __name__ == '__main__':
-    decode()
+    test()
