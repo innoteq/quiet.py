@@ -227,7 +227,7 @@ def test():
 
     for chunk in encoder.encode('hello, world'):
         message = decoder.decode(chunk)
-        if message:
+        if message is not None:
             print(message)
 
 
