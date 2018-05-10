@@ -32,4 +32,5 @@ setup(name='quiet',
           'build_py': BuildPyCommand,
       },
       packages=['quiet'],
+      include_package_data=True,
       zip_safe=False)
