@@ -8,7 +8,7 @@ from numpy.ctypeslib import ndpointer
 import numpy
 
 
-PROFILES = os.path.join(os.path.dirname(__file__), 'quiet-profiles.json')
+PROFILES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'quiet-profiles.json')
 
 c_float_p = POINTER(c_float)
 
@@ -20,7 +20,7 @@ class Quiet(object):
     @staticmethod
     def load_lib():
         lib_name = 'libquiet.so'
-        lib_path = os.path.join(os.path.dirname(__file__), lib_name)
+        lib_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), lib_name)
 
         if os.path.isfile(lib_path):
             lib = cdll.LoadLibrary(lib_path)
@@ -243,4 +243,4 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    decode()
