@@ -59,8 +59,8 @@ gcc -shared -o $ABSPATH/quiet/libquiet.so \
 $LIBPATH/libjansson.a -Wl,-noall_load
 else
 gcc -shared -o $ABSPATH/quiet/libquiet.so \
--Wl,--whole-archive $LIBPATH/libquiet.a $LIBPATH/libliquid.a $LIBPATH/libfec.a \
-$LIBPATH/libjansson.a -Wl,--no-whole-archive
+-Wl,--whole-archive $LIBPATH/libquiet.a  -Wl,--no-whole-archive $LIBPATH/libliquid.a $LIBPATH/libfec.a \
+$LIBPATH/libjansson.a
 fi
 
 
