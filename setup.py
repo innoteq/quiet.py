@@ -22,15 +22,18 @@ class BuildPyCommand(build_py):
         build_py.run(self)
 
 
-setup(name='quiet',
-      version='0.1',
-      description='Quiet Modem',
-      author='Brian Armstrong, Yihui Xiong',
-      author_email='brian.armstrong.ece+pypi@gmail.com',
-      url='https://github.com/quiet/quiet.py',
-      cmdclass={
-          'build_py': BuildPyCommand,
-      },
-      packages=['quiet'],
-      include_package_data=True,
-      zip_safe=False)
+setup(
+    name='quiet',
+    version='0.1',
+    description='Quiet Modem',
+    author='Brian Armstrong, Yihui Xiong',
+    author_email='brian.armstrong.ece+pypi@gmail.com',
+    url='https://github.com/quiet/quiet.py',
+    cmdclass={
+        'build_py': BuildPyCommand,
+    },
+    packages=['quiet'],
+    install_requires=['numpy==1.14.5', ],
+    include_package_data=True,
+    zip_safe=False
+)
