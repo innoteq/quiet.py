@@ -167,7 +167,7 @@ class Encoder(object):
     def __del__(self):
         Quiet.lib.quiet_encoder_destroy(self._encoder)
 
-    def encode(self, data, chunk_size=1024):
+    def encode(self, data, chunk_size=32768):
         Quiet.lib.quiet_encoder_send(
             self._encoder, data.encode('utf-8'), len(data))
 
